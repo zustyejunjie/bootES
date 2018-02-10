@@ -25,7 +25,8 @@ public class Application {
 		return "index";
 	}
 
-	@GetMapping("/get/book/novel")
+	@ResponseBody
+	@GetMapping("/get/people/man")
 	public ResponseEntity get(@RequestParam(name="id", defaultValue = "") String id){
 		if(id == null){
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
