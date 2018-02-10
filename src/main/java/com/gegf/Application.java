@@ -31,7 +31,7 @@ public class Application {
 		if(id == null){
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		}
-		GetResponse result = this.client.prepareGet("book", "novel", id).get();
+		GetResponse result = this.client.prepareGet("people", "man", id).get();
 		if(!result.isExists()){
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		}

@@ -15,13 +15,13 @@ public class MyConfig {
     @Bean
     public TransportClient client() throws Exception{
         InetSocketTransportAddress node = new InetSocketTransportAddress(
-                InetAddress.getByName("192.168.141.1"), 9300
+                InetAddress.getByName("localhost"), 9300
         );
 
-       /* Settings settings = Settings.builder()
-                .put("cluster.name", "gegf").build();*/
+        Settings settings = Settings.builder()
+                .put("cluster.name", "gegf").put("client.transport.sniff", true).build();
 
-        TransportClient client = new PreBuiltTransportClient(Settings.EMPTY);
+        TransportClient client = new PreBuiltTransportClient(settings);
         client.addTransportAddress(node);
         return client;
     }
