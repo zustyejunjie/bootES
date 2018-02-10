@@ -1,16 +1,20 @@
 package com.gegf;
 
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.Date;
 
 
 @SpringBootApplication
@@ -37,6 +41,26 @@ public class Application {
 		}
 		return new ResponseEntity(result.getSource(), HttpStatus.OK);
 	}
+
+	@ResponseBody
+    @PostMapping("/add/people/man")
+    public ResponseEntity add(@RequestParam(name="name") String name,
+                              @RequestParam(name="country") String country,
+                              @RequestParam(name="age") int age,
+                              @RequestParam(name="date") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date date){
+        try {
+           XContentBuilder contentBuilder = XContentFactory.jsonBuilder().startObject()
+                    .field("name", name)
+                    .field("country", country)
+                    .field("age", age)
+                    .field("date", date).endObject();
+            IndexResponse response = this.client.prepareIndex("people", "man").setSource(contentBuilder).get();
+            return new ResponseEntity(response.getId(), HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 
