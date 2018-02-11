@@ -1,10 +1,20 @@
 package com.gegf;
 
+import org.apache.lucene.util.QueryBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +24,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 @SpringBootApplication
@@ -62,7 +76,85 @@ public class Application {
         }
     }
 
+    @ResponseBody
+    @DeleteMapping("/delete/people/man")
+	public ResponseEntity del(@RequestParam(name="id") String id) {
+		DeleteResponse response = this.client.prepareDelete("people", "man", id).get();
+		return new ResponseEntity(response.getResult().toString(), HttpStatus.OK);
+	}
 
+	@ResponseBody
+	@PutMapping("/update/people/man")
+	public ResponseEntity update(@RequestParam(name="id") String id,
+							   @RequestParam(name="name", required = false) String name,
+							   @RequestParam(name="country", required = false) String country) {
+		UpdateRequest updateRequest = new UpdateRequest("people", "man", id);
+		try {
+			XContentBuilder builder = XContentFactory.jsonBuilder().startObject();
+			if(name != null){
+				builder.field("name", name);
+			}
+			if(country != null){
+				builder.field("country", country);
+			}
+			builder.endObject();
+			updateRequest.doc(builder);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		try {
+			this.client.update(updateRequest).get();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
+	/**
+	 * 复合查询
+	 * @param name
+	 * @param country
+	 * @param gtAge
+	 * @param ltAge
+	 * @return
+	 */
+	@ResponseBody
+	@PostMapping("/query/people/man")
+	public ResponseEntity query(@RequestParam(name = "name",required = false) String name,
+								@RequestParam(name = "country",required = false) String country,
+								@RequestParam(name="gt_age", defaultValue = "0") int gtAge,
+								@RequestParam(name="lt_age", required = false) Integer ltAge){
+		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+		if(name != null){
+			boolQuery.must(QueryBuilders.matchQuery("name", name));
+		}
+		if(country != null){
+			boolQuery.must(QueryBuilders.matchQuery("country", country));
+		}
+		RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("age").from(gtAge);
+		if(ltAge != null && ltAge > 0){
+			rangeQuery.to(ltAge);
+		}
+		boolQuery.filter(rangeQuery);
+		SearchRequestBuilder builder = this.client.prepareSearch("people").setTypes("man")
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+				.setQuery(boolQuery)
+				.setFrom(0).setSize(10);
+		System.out.println(builder);
+
+		SearchResponse response = builder.get();
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+
+		for (SearchHit hit : response.getHits()){
+			result.add(hit.getSource());
+		}
+        return new ResponseEntity(result, HttpStatus.OK);
+	}
 
 
 	public static void main(String[] args) {
