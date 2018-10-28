@@ -114,48 +114,6 @@ public class Application {
 		return new ResponseEntity(HttpStatus.OK);
 	}
 
-	/**
-	 * 复合查询
-	 * @param name
-	 * @param country
-	 * @param gtAge
-	 * @param ltAge
-	 * @return
-	 */
-	@ResponseBody
-	@PostMapping("/query/people/man")
-	public ResponseEntity query(@RequestParam(name = "name",required = false) String name,
-								@RequestParam(name = "country",required = false) String country,
-								@RequestParam(name="gt_age", defaultValue = "0") int gtAge,
-								@RequestParam(name="lt_age", required = false) Integer ltAge){
-		BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-
-		if(name != null){
-			boolQuery.must(QueryBuilders.matchQuery("name", name));
-		}
-		if(country != null){
-			boolQuery.must(QueryBuilders.matchQuery("country", country));
-		}
-		RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("age").from(gtAge);
-		if(ltAge != null && ltAge > 0){
-			rangeQuery.to(ltAge);
-		}
-		boolQuery.filter(rangeQuery);
-		SearchRequestBuilder builder = this.client.prepareSearch("people").setTypes("man")
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setQuery(boolQuery)
-				.setFrom(0).setSize(10);
-		System.out.println(builder);
-
-		SearchResponse response = builder.get();
-		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-
-		for (SearchHit hit : response.getHits()){
-			result.add(hit.getSource());
-		}
-        return new ResponseEntity(result, HttpStatus.OK);
-	}
-
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
