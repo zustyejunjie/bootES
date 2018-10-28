@@ -1,8 +1,8 @@
-package com.gegf.es;
+package com.yejunjie.es;
 
 import com.alibaba.fastjson.JSON;
-import com.gegf.AbstractControllerTest;
-import com.gegf.dto.BadReviewItemLog;
+import com.yejunjie.AbstractControllerTest;
+import com.yejunjie.dto.BadReviewItemLog;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,58 +1,13 @@
 # SpringbootDemo
 Springboot学习的Demo，以及整合ElasticSearch的例子。
 
-#### 1. 创建索引
+boot项目从github中下载。
 
-- PUT 127.0.0.1:9200/people 
+后续会提供es的java api，
+封装为sdk 方便其他同学使用。
 
-- body:
-	 
-	
-	    {
-	  	  "settings":{
-     	    "number_of_shards": 3,
-     	    "number_of_replicas": 1
-     	},
-     	"mappings": {
-     	    "man":{
-     	        "properties":{
-     	            "name":{
-     	                "type": "text"
-     	            },
-     	            "country":{
-     	                "type": "keyword"
-     	            },
-     	            "age": {
-     	                "type": "integer"
-     	            },
-     	            "date": {
-     	                    "type": "date",
-     	                    "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd"
-     	            }
-     	        }
-     	    }
-     	}
- 	 }
- 
-- 2.插入数据（指定ID）
- 	
-   PUT 127.0.0.1:9200/people/man/1
-  
+java api 的curd网上资料很多，高级查询等也有一些资料，但是有些
+还是写的不够详细，还有一些是不断的被转载。
 
-	 {
-     	 "name": "小兰",
-      	"country": "China",
-     	"age": 30,
-     	"date": "1988-03-11"
- 	}
- 
-  插入数据（ES生成ID）
- 
- POST 127.0.0.1:9200/people/man
-	
-	  {
-       "name": "小明",
-  	     "country": "China",
-       "age": 30,
-       "date": "1988-03-11"
-     }
+整理一份相对可靠的api，主要偏向于一些复杂的查询，性能等。
+简单的一些操作会简单写一写。

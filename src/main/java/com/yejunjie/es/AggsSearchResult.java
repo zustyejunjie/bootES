@@ -1,4 +1,4 @@
-package com.gegf.es;
+package com.yejunjie.es;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

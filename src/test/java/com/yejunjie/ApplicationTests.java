@@ -1,4 +1,4 @@
-package com.gegf;
+package com.yejunjie;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

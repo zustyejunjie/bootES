@@ -1,4 +1,4 @@
-package com.gegf.es;
+package com.yejunjie.es;
 
 /**
  * @author hanyuting

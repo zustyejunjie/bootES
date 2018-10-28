@@ -1,6 +1,6 @@
-package com.gegf.es;
+package com.yejunjie.es;
 
-import com.gegf.util.DateUtil;
+import com.yejunjie.util.DateUtil;
 import com.google.common.collect.Lists;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;

@@ -1,4 +1,4 @@
-package com.gegf.dto;
+package com.yejunjie.dto;
 
 import lombok.Data;
 

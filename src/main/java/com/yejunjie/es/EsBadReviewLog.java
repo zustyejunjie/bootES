@@ -1,4 +1,4 @@
-package com.gegf.es;
+package com.yejunjie.es;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;

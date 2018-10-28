@@ -1,4 +1,4 @@
-package com.gegf;
+package com.yejunjie;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;

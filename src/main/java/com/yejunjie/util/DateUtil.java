@@ -1,4 +1,4 @@
-package com.gegf.util;
+package com.yejunjie.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
