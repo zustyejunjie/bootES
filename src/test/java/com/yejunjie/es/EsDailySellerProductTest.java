@@ -22,10 +22,10 @@ public class EsDailySellerProductTest extends AbstractControllerTest {
         String sellerId = "A3DX6IPPS9017J";
         String platform = "amazon_na";
         String marketplace = "amazon";
-        String startDate = "2018-10-18";
-        String endDate = "2018-10-18";
+        String startDate = "2018-10-01";
+        String endDate = "2018-10-30";
         String sortColume = "sale_amount";
-        AggsSearchResult result =  esDailySellerProduct.aggSumOrderResult(sellerId,marketplace,startDate,endDate,sortColume);
+        AggsSearchResult result =  esDailySellerProduct.aggSumOrderResult(sellerId,marketplace,startDate,endDate,sortColume,"");
         JSONObject analyse = result.getAggregations();
         JSONArray jsonArray = (JSONArray)analyse.getJSONObject(EsDailySellerProduct.GROUP_ALIAS).getJSONObject(EsDailySellerProduct.GROUP_ALIAS).get("buckets");
         for(int i = 0;i<jsonArray.size();i++){

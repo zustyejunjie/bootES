@@ -2,6 +2,8 @@ package com.yejunjie.es;
 
 import com.yejunjie.util.DateUtil;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
@@ -37,6 +39,7 @@ public class EsDailySellerProduct extends BaseEsClient {
     public static final String GROUP_ALIAS = "group";
     public static final String SUM_ALIAS = "sum";
     public static final String VALUE = "value";
+    public static  final String TITLE ="product_title";
 
     /**
      *
@@ -63,12 +66,27 @@ public class EsDailySellerProduct extends BaseEsClient {
             qb,aggBuilders);
     }
 
-    public AggsSearchResult aggSumOrderResult(String sellerId,String market,String startDate,String endDate,String orderColumn){
+    public AggsSearchResult aggSumOrderResult(String sellerId,String market,String startDate,String endDate,String orderColumn,String keyword){
+        //时间范围
         RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(DATE_FIELD).gte(startDate).lte(endDate);
-        QueryBuilder qb = boolQuery()
-                .must(termQuery(SELLER_FIELD,sellerId))
-                .must(termQuery(MARKET_FIELD,market))
-                .must(rangeQueryBuilder);
+        //过滤数据 匹配sellerId marketplace 时间范围
+        BoolQueryBuilder qb = boolQuery();
+        if(StringUtils.isNotEmpty(sellerId)){
+            qb.filter(termsQuery(SELLER_FIELD,sellerId));
+        }
+        qb.filter(termQuery(MARKET_FIELD,market))
+                .filter(rangeQueryBuilder);
+
+        //关键字搜索
+        if(StringUtils.isNotEmpty(keyword)){
+            qb.must(
+                    boolQuery()
+                            .should(termQuery(ASIN_FIELD,keyword))
+                            .should(matchPhraseQuery(TITLE,keyword))
+            );
+        }
+
+
         List<AggregationBuilder> aggBuilders = Lists.newArrayList();
         TermsAggregationBuilder teamAgg= AggregationBuilders.terms(GROUP_ALIAS).field(ASIN_FIELD).order(BucketOrder.aggregation(SUM_ALIAS,false));
         //计算指定字段sum
