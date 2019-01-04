@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -26,9 +27,14 @@ public class Main {
                 .collect(toList());
         System.out.println(JSON.toJSONString(result));
 
-        //
-
-
+        //flatmap
+        List<String> uniqueCharacters =
+                words.stream()
+                        .map(w -> w.split(""))
+                        .flatMap(Arrays::stream)
+                        .distinct()
+                        .collect(Collectors.toList());
+        System.out.println(JSON.toJSONString(uniqueCharacters));
 
 
     }
