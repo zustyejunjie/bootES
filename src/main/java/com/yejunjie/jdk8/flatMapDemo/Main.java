@@ -20,6 +20,7 @@ public class Main {
 
         /**
          * 把word 转为 split 的数组类型
+         * 返回一个数组的list
          */
         List<String[]> result = words.stream()
                 .map(word -> word.split(""))
@@ -27,7 +28,7 @@ public class Main {
                 .collect(toList());
         System.out.println(JSON.toJSONString(result));
 
-        //flatmap
+        // flatMap 把多个流合并成一个流
         List<String> uniqueCharacters =
                 words.stream()
                         .map(w -> w.split(""))
